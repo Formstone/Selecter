@@ -89,6 +89,14 @@ if (jQuery) (function($) {
 						 .remove();
 			}
 			return $items;
+		},
+		// Select an Item programmatically
+		selectItem: function(target) {
+			var $items = $(this);
+			var data = $('.selecter').data().selecter;
+			var index = data.$items.index($("[data-value='"+target+"']"));
+			_update(index, data, false);
+			return $items;
 		}
 		
 	};
