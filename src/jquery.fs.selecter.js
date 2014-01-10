@@ -1,10 +1,10 @@
 ;(function ($, window) {
 	"use strict";
-	
+
 	var guid = 0,
 		isFirefox = window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
 		isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test( (window.navigator.userAgent||window.navigator.vendor||window.opera) );
-	
+
 	/**
 	 * @options
 	 * @param callback [function] <$.noop> "Select item callback"
@@ -24,11 +24,11 @@
 		links: false,
 		trim: 0
 	};
-	
+
 	var pub = {
-		
+
 		/**
-		 * @method 
+		 * @method
 		 * @name defaults
 		 * @description Sets default plugin options
 		 * @param opts [object] <{}> "Options object"
@@ -38,9 +38,9 @@
 			options = $.extend(options, opts || {});
 			return $(this);
 		},
-		
+
 		/**
-		 * @method 
+		 * @method
 		 * @name disable
 		 * @description Disables target instance or option
 		 * @param option [string] <null> "Target option value"
@@ -49,27 +49,27 @@
 		disable: function(option) {
 			return $(this).each(function(i, input) {
 				var data = $(input).next(".selecter").data("selecter");
-				
+
 				if (typeof data !== "undefined") {
 					if (typeof option !== "undefined") {
 						var index = data.$items.index( data.$items.filter("[data-value=" + option + "]") );
-						
+
 						data.$items.eq(index).addClass("disabled");
 						data.$options.eq(index).prop("disabled", true);
 					} else {
 						if (data.$selecter.hasClass("open")) {
 							data.$selecter.find(".selecter-selected").trigger("click");
 						}
-						
+
 						data.$selecter.addClass("disabled");
 						data.$select.prop("disabled", true);
 					}
 				}
 			});
 		},
-		
+
 		/**
-		 * @method 
+		 * @method
 		 * @name enable
 		 * @description Enables target instance or option
 		 * @param option [string] <null> "Target option value"
@@ -78,7 +78,7 @@
 		enable: function(option) {
 			return $(this).each(function(i, input) {
 				var data = $(input).next(".selecter").data("selecter");
-				
+
 				if (typeof data !== "undefined") {
 					if (typeof option !== "undefined") {
 						var index = data.$items.index( data.$items.filter("[data-value=" + option + "]") );
@@ -91,9 +91,9 @@
 				}
 			});
 		},
-		
+
 		/**
-		 * @method 
+		 * @method
 		 * @name destroy
 		 * @description Removes instance of plugin
 		 * @example $(".target").selecter("destroy");
@@ -102,28 +102,49 @@
 			return $(this).each(function(i, input) {
 				var $input = $(input),
 					$selecter = $input.next(".selecter");
-				
+
 				if ($selecter.length) {
 					if ($selecter.hasClass("open")) {
 						$selecter.find(".selecter-selected").trigger("click");
 					}
-					
+
 					// Scroller support
 					if ($.fn.scroller !== undefined) {
 						$selecter.find(".selecter-options").scroller("destroy");
 					}
-					
+
 					$input.off(".selecter")
 						  .removeClass("selecter-element")
 						  .show();
-					
+
 					$selecter.off(".selecter")
 							 .remove();
 				}
 			});
-		}
+		},
+
+    /**
+     * @method
+     * @name refresh
+     * @description Updates the options and selected option
+     * @example $(".target").selecter("refresh");
+     */
+     refresh: function() {
+       return $(this).each(function(i, input) {
+        var $el = $(input),
+          data = $el.next(".selecter").data("selecter"),
+          selectedText = $el.find("option:selected").text();
+
+        data.$allOptions = $el.find("option, optgroup");
+        data.$options = $el.find("option");
+
+        $el.next(".selecter").find(".selecter-selected").text(selectedText);
+
+        _buildOptions(data);
+       });
+     }
 	};
-	
+
 	/**
 	 * @method private
 	 * @name _init
@@ -133,7 +154,7 @@
 	function _init(opts) {
 		// Local options
 		opts = $.extend({}, options, opts || {});
-		
+
 		// Apply to each element
 		var $items = $(this);
 		for (var i = 0, count = $items.length; i < count; i++) {
@@ -141,7 +162,7 @@
 		}
 		return $items;
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _build
@@ -153,21 +174,21 @@
 		if (!$select.hasClass("selecter-element")) {
 			// EXTEND OPTIONS
 			opts = $.extend({}, opts, $select.data("selecter-options"));
-			
+
 			if (opts.external) {
 				opts.links = true;
 			}
-			
+
 			// Build options array
 			var $allOptions = $select.find("option, optgroup"),
 				$options = $allOptions.filter("option"),
 				$originalOption = $options.filter(":selected"),
 				originalIndex = (opts.label !== "") ? -1 : $options.index($originalOption),
 				wrapperTag = (opts.links) ? "nav" : "div";
-			
+
 			opts.multiple = $select.prop("multiple");
 			opts.disabled = $select.is(":disabled");
-			
+
 			// Build HTML
 			var html = '<' + wrapperTag + ' class="selecter ' + opts.customClass;
 			// Special case classes
@@ -193,11 +214,11 @@
 			html += '<div class="selecter-options">';
 			html += '</div>';
 			html += '</' + wrapperTag + '>';
-			
+
 			// Modify DOM
 			$select.addClass("selecter-element")
 				   .after(html);
-			
+
 			// Store plugin data
 			var $selecter = $select.next(".selecter"),
 				data = $.extend({
@@ -210,20 +231,20 @@
 					index: originalIndex,
 					guid: guid++
 				}, opts);
-			
+
 			_buildOptions(data);
-			
+
 			// Scroller support
 			if ($.fn.scroller !== undefined) {
 				data.$itemsWrapper.scroller();
 			}
-			
+
 			// Bind click events
 			data.$selecter.on("click.selecter", ".selecter-selected", data, _onClick)
 						  .on("click.selecter", ".selecter-item", data, _onSelect)
 						  .on("close.selecter", data, _onClose)
 						  .data("selecter", data);
-			
+
 			// Bind Blur/focus events
 			if ((!data.links && !isMobile) || isMobile) {
 				data.$select.on("change.selecter", data, _onChange)
@@ -237,7 +258,7 @@
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _buildOptions
@@ -248,10 +269,10 @@
 		var html = '',
 			itemTag = (data.links) ? "a" : "span",
 			j = 0;
-		
+
 		for (var i = 0, count = data.$allOptions.length; i < count; i++) {
 			var $op = data.$allOptions.eq(i);
-			
+
 			// Option group
 			if ($op[0].tagName === "OPTGROUP") {
 				html += '<span class="selecter-group';
@@ -262,13 +283,13 @@
 				html += '">' + $op.attr("label") + '</span>';
 			} else {
 				var opVal = $op.val();
-				
+
 				if (!$op.attr("value")) {
 					$op.attr("value", opVal);
 				}
-				
+
 				html += '<' + itemTag + ' class="selecter-item';
-				// Default selected value - now handles multi's thanks to @kuilkoff 
+				// Default selected value - now handles multi's thanks to @kuilkoff
 				if ($op.is(':selected') && data.label === "") {
 					html += ' selected';
 				}
@@ -286,11 +307,11 @@
 				j++;
 			}
 		}
-		
+
 		data.$itemsWrapper.html(html);
 		data.$items = data.$selecter.find(".selecter-item");
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onClick
@@ -300,12 +321,12 @@
 	function _onClick(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
+
 		var data = e.data;
-		
+
 		if (!data.$select.is(":disabled")) {
 			$(".selecter").not(data.$selecter).trigger("close.selecter", [data]);
-			
+
 			// Handle mobile
 			if (isMobile) {
 				var el = data.$select[0];
@@ -326,7 +347,7 @@
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onOpen
@@ -336,29 +357,29 @@
 	function _onOpen(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
+
 		var data = e.data;
-		
+
 		// Make sure it's not alerady open
 		if (!data.$selecter.hasClass("open")) {
 			var selectOffset = data.$selecter.offset(),
 				bodyHeight = $("body").outerHeight(),
 				optionsHeight = data.$itemsWrapper.outerHeight(true);
-			
+
 			// Calculate bottom of document
 			if (selectOffset.top + optionsHeight > bodyHeight) {
 				data.$selecter.addClass("bottom");
 			}
-			
+
 			data.$itemsWrapper.show();
-			
+
 			// Bind Events
 			data.$selecter.removeClass("closed")
 						  .addClass("open");
 			$("body").on("click.selecter-" + data.guid, ":not(.selecter-options)", data, _onCloseHelper);
-			
+
 			var selectedOffset = (data.index >= 0) ? data.$items.eq(data.index).position() : { left: 0, top: 0 };
-			
+
 			if ($.fn.scroller !== undefined) {
 				data.$itemsWrapper.scroller("scroll", (data.$itemsWrapper.find(".scroller-content").scrollTop() + selectedOffset.top), 0)
 								  .scroller("reset");
@@ -367,7 +388,7 @@
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onCloseHelper
@@ -377,12 +398,12 @@
 	function _onCloseHelper(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
+
 		if ($(e.currentTarget).parents(".selecter").length === 0) {
 			_onClose(e);
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onClose
@@ -392,9 +413,9 @@
 	function _onClose(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
+
 		var data = e.data;
-		
+
 		// Make sure it's actually open
 		if (data.$selecter.hasClass("open")) {
 			data.$itemsWrapper.hide();
@@ -403,7 +424,7 @@
 			$("body").off(".selecter-" + data.guid);
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onSelect
@@ -413,24 +434,24 @@
 	function _onSelect(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
+
 		var $target = $(this),
 			data = e.data;
-		
+
 		if (!data.$select.is(":disabled")) {
 			if (data.$itemsWrapper.is(":visible")) {
-				// Update 
+				// Update
 				var index = data.$items.index($target);
 				_update(index, data, false);
 			}
-			
+
 			if (!data.multiple) {
 				// Clean up
 				_onClose(e);
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onChange
@@ -441,7 +462,7 @@
 		if (!internal) {
 			var $target = $(this),
 				data = e.data;
-			
+
 			// Mobile link support
 			if (data.links) {
 				if (isMobile) {
@@ -458,7 +479,7 @@
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onFocus
@@ -468,16 +489,16 @@
 	function _onFocus(e) {
 		e.preventDefault();
 		e.stopPropagation();
-		
+
 		var data = e.data;
-		
+
 		if (!data.$select.is(":disabled") && !data.multiple) {
 			data.$selecter.addClass("focus");
 			$(".selecter").not(data.$selecter).trigger("close.selecter", [data]);
 			$("body").on("keydown.selecter-" + data.guid, data, _onKeypress);
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onBlur
@@ -493,7 +514,7 @@
 		$(".selecter").not(data.$selecter).trigger("close.selecter", [data]);
 		$("body").off(".selecter-" + data.guid);
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _onKeypress
@@ -502,7 +523,7 @@
 	 */
 	function _onKeypress(e) {
 		var data = e.data;
-		
+
 		if (data.$selecter.hasClass("open") && e.keyCode === 13) {
 			_update(data.index, data, false);
 			_onClose(e);
@@ -510,10 +531,10 @@
 			// Ignore modifiers & tabs
 			e.preventDefault();
 			e.stopPropagation();
-			
+
 			var total = data.$items.length - 1,
 				index = -1;
-			
+
 			// Firefox left/right support thanks to Kylemade
 			if ($.inArray(e.keyCode, (isFirefox) ? [38, 40, 37, 39] : [38, 40]) > -1) {
 				// Increment / decrement using the arrow keys
@@ -528,7 +549,7 @@
 				var input = String.fromCharCode(e.keyCode).toUpperCase(),
 					letter,
 					i;
-				
+
 				// Search for input from original index
 				for (i = data.index + 1; i <= total; i++) {
 					letter = data.$options.eq(i).text().charAt(0).toUpperCase();
@@ -537,7 +558,7 @@
 						break;
 					}
 				}
-				
+
 				// If not, start from the beginning
 				if (index < 0) {
 					for (i = 0; i <= total; i++) {
@@ -549,14 +570,14 @@
 					}
 				}
 			}
-			
+
 			// Update
 			if (index >= 0) {
 				_update(index, data, true /* !data.$selecter.hasClass("open") */);
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _update
@@ -569,30 +590,30 @@
 		var $item = data.$items.eq(index),
 			isSelected = $item.hasClass("selected"),
 			isDisabled = $item.hasClass("disabled");
-		
+
 		// Check for disabled options
 		if (!isDisabled) {
 			// Make sure we have a new index to prevent false 'change' triggers
 			if (!isSelected || data.links) {
 				var newLabel = $item.html(),
 					newValue = $item.data("value");
-				
+
 				// Modify DOM
 				if (data.multiple) {
 					data.$options.eq(index).prop("selected", true);
 				} else {
 					data.$selected.html(newLabel);
 					data.$items.filter(".selected").removeClass("selected");
-					
+
 					data.$select[0].selectedIndex = index;
-					
+
 					if (data.links && !keypress) {
 						if (isMobile) {
 							_launch(data.$select.val(), data.external);
 						} else {
 							_launch($item.attr("href"), data.external);
 						}
-						
+
 						return;
 					}
 				}
@@ -602,7 +623,7 @@
 				data.$options.eq(index).prop("selected", null);
 				$item.removeClass("selected");
 			}
-			
+
 			if (!isSelected || data.multiple) {
 				// Fire callback
 				data.callback.call(data.$selecter, data.$select.val(), index);
@@ -610,7 +631,7 @@
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _launch
@@ -619,15 +640,15 @@
 	 * @param external [boolean] "External link flag"
 	 */
 	function _launch(url, external) {
-		if (external) { 
+		if (external) {
 			// Open link in a new tab/window
 			window.open(url);
-		} else { 
+		} else {
 			// Open link in same tab/window
 			window.location.href = url;
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _trim
@@ -647,7 +668,7 @@
 			}
 		}
 	}
-	
+
 	/**
 	 * @method private
 	 * @name _escape
@@ -657,7 +678,7 @@
 	function _escape(text) {
 		return text.replace(/([;&,\.\+\*\~':"\!\^#$%@\[\]\(\)=>\|])/g, '\\$1');
 	}
-	
+
 	$.fn.selecter = function(method) {
 		if (pub[method]) {
 			return pub[method].apply(this, Array.prototype.slice.call(arguments, 1));
