@@ -313,7 +313,7 @@
 				data.$select.on("change.selecter", data, _onChange);
 
 				if (!isMobile) {
-					data.$selecter.on("focus.selecter", data, _onFocus)
+					data.$selecter.on("focusin.selecter", data, _onFocus)
 								  .on("blur.selecter", data, _onBlur);
 
 					// handle clicks to associated labels - not on mobile
