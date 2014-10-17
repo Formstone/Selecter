@@ -68,6 +68,7 @@
   margin: auto 0;
 }
 .no-touch .selecter .selecter-selected:hover {
+  background-color: #cccccc;
   color: #333333;
 }
 .no-touch .selecter .selecter-selected:hover:after {
