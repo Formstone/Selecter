@@ -1,5 +1,5 @@
 /* 
- * Selecter v3.1.10 - 2014-10-16 
+ * Selecter v3.1.10 - 2014-10-17 
  * A jQuery plugin for replacing default select elements. Part of the Formstone Library. 
  * http://formstone.it/selecter/ 
  * 
@@ -103,6 +103,7 @@
 @media screen and (min-width: 980px) {
   .selecter .selecter-item:hover,
   .selecter .selecter-item.selected:hover {
+    color: #333333;
     background-color: #ffffff;
   }
   .selecter .selecter-item.disabled:hover {
@@ -194,6 +195,7 @@
 @media screen and (min-width: 980px) {
   .selecter:hover .selecter-selected,
   .selecter.disabled .selecter-item:hover {
+    color: #333333;
     background-color: #ffffff;
   }
 }
