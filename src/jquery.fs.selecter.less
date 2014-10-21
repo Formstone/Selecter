@@ -84,7 +84,12 @@
 		}
 
 		.no-touch & &-selected:hover {
+			background-color: @selecter-hover-background-color;
 			color: @selecter-hover-text-color;
+			
+			&:after {
+				border-top-color: @selecter-caret-hover-color;
+			}
 		}
 
 		.no-touch &.disabled &-selected:hover {
