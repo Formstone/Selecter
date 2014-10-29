@@ -698,6 +698,8 @@
 			if (index >= 0) {
 				_update(index, data);
 				_scrollOptions(data);
+				//trigger the change event on the select when updating the selecter
+				data.$select.change()
 			}
 		}
 	}
