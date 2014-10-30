@@ -1,11 +1,3 @@
-/* 
- * Selecter v3.2.3 - 2014-10-24 
- * A jQuery plugin for replacing default select elements. Part of the Formstone Library. 
- * http://formstone.it/selecter/ 
- * 
- * Copyright 2014 Ben Plum; MIT Licensed 
- */
-
 ;(function ($, window) {
 	"use strict";
 
@@ -651,7 +643,7 @@
 	function _onKeypress(e) {
 		var data = e.data;
 
-		if (e.keyCode === 13) {
+		if (e.keyCode === 13 || e.keyCode === 9) {
 			if (data.$selecter.hasClass("open")) {
 				_onClose(e);
 				_update(data.index, data);
@@ -706,6 +698,8 @@
 			if (index >= 0) {
 				_update(index, data);
 				_scrollOptions(data);
+				//trigger the change event on the select when updating the selecter
+				data.$select.change()
 			}
 		}
 	}
