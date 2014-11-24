@@ -526,7 +526,7 @@
 		e.preventDefault();
 		e.stopPropagation();
 
-		if ($(e.currentTarget).parents(".selecter").length === 0) {
+		if ($(e.currentTarget).closest(".selecter").length === 0) {
 			_onClose(e);
 		}
 	}
