@@ -1,5 +1,5 @@
 /* 
- * Selecter v3.2.4 - 2015-01-07 
+ * Selecter v3.2.4 - 2015-01-16 
  * A jQuery plugin for replacing default select elements. Part of the Formstone Library. 
  * http://formstone.it/selecter/ 
  * 
@@ -143,33 +143,35 @@
 
 
 		/**
-		* @method private
-		* @name refresh
-		* @description DEPRECATED - Updates instance base on target options
-		* @example $(".target").selecter("refresh");
-		*/
+		 * @method private
+		 * @name refresh
+		 * @description DEPRECATED - Updates instance base on target options
+		 * @example $(".target").selecter("refresh");
+		 */
 		refresh: function() {
 			return pub.update.apply($(this));
 		},
 
 		/**
-		* @method
-		* @name update
-		* @description Updates instance base on target options
-		* @example $(".target").selecter("update");
-		*/
+		 * @method
+		 * @name update
+		 * @description Updates instance base on target options
+		 * @example $(".target").selecter("update");
+		 */
 		update: function() {
 			return $(this).each(function(i, input) {
 				var data = $(input).parent(".selecter").data("selecter");
 
 				if (data) {
-					var index = data.index;
+					if (data.label) {
+						data.$select.prepend('<option value="" class="selecter-placeholder">' + data.label + '</option>');
+					}
 
 					data.$allOptions = data.$select.find("option, optgroup");
 					data.$options = data.$allOptions.filter("option");
 					data.index = -1;
 
-					index = data.$options.index(data.$options.filter(":selected"));
+					var index = data.$options.index(data.$options.filter(":selected"));
 
 					_buildOptions(data);
 
@@ -240,14 +242,13 @@
 			var $allOptions = $select.find("option, optgroup"),
 				$options = $allOptions.filter("option");
 
-			// If we didn't actually have a selected elemtn
+			// If we didn't actually have a selected element
 			if (!$originalOption.length) {
 				$originalOption = $options.eq(0);
 			}
 
 			// Determine original item
 			var originalIndex = (originalOptionIndex > -1) ? originalOptionIndex : 0,
-				originalLabel = (opts.label !== "") ? opts.label : $originalOption.text(),
 				wrapperTag = "div";
 
 			// Swap tab index, no more interacting with the actual select!
@@ -279,9 +280,7 @@
 
 			// Build inner
 			if (!opts.multiple) {
-				inner += '<span class="selecter-selected">';
-				inner += $('<span></span>').text( _trim(originalLabel, opts.trim) ).html();
-				inner += '</span>';
+				inner += '<span class="selecter-selected"></span>';
 			}
 			inner += '<div class="selecter-options">';
 			inner += '</div>';
@@ -747,7 +746,7 @@
 				$item.addClass("selected");
 				data.index = index;
 			} else if (data.label !== "") {
-				data.$selected.html(data.label);
+				data.$selected.html( _trim(data.label, data.trim) );
 			}
 		}
 	}
