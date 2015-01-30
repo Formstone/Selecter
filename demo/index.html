@@ -78,7 +78,7 @@
 				});
 			});
 
-			function selectCallback(value, index) {
+			function selectCallback(value, index, $selecter) {
 				$(".demo .callback_output").prepend("<p>VALUE: " + value + ", INDEX: " + index + "</p>");
 			}
 
@@ -354,7 +354,7 @@
 	callback: selectCallback
 });
 
-function selectCallback(value, index) {
+function selectCallback(value, index, $selecter) {
     alert("VALUE: " + value + ", INDEX: " + index);
 }</code></pre>
 

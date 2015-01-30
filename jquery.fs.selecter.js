@@ -780,7 +780,7 @@
 		if (data.links) {
 			_launch(data);
 		} else {
-			data.callback.call(data.$selecter, data.$select.val(), data.index);
+			data.callback.call(data.$selecter, data.$select.val(), data.index, data.$selecter);
 			data.$select.trigger("change", [ true ]);
 		}
 	}
