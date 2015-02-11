@@ -107,7 +107,7 @@ module.exports = function(grunt) {
 		// Auto Prefixer
 		autoprefixer: {
 			options: {
-				borwsers: [ '> 1%', 'last 5 versions', 'Firefox ESR', 'Opera 12.1', '>= ie 8' ]
+				browsers: [ '> 1%', 'last 5 versions', 'Firefox ESR', 'Opera 12.1', '>= ie 8' ]
 			},
 			no_dest: {
 				 src: '*.css'
