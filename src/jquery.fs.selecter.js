@@ -3,6 +3,7 @@
 
 	var guid = 0,
 		userAgent = (window.navigator.userAgent||window.navigator.vendor||window.opera),
+		ignoredKeyCode = [19, 20, 27, 33, 34, 35, 36, 44, 45, 46, 91, 92, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 144, 145],
 		isFirefox = /Firefox/i.test(userAgent),
 		isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(userAgent),
 		isFirefoxMobile = (isFirefox && isMobile),
@@ -608,7 +609,7 @@
 
 		if (!data.$select.is(":disabled") && !data.multiple) {
 			data.$selecter.addClass("focus")
-						  .on("keydown.selecter-" + data.guid, data, _onKeypress);
+						  .on("keydown.selecter-" + data.guid, data, _onKeydown);
 
 			$(".selecter").not(data.$selecter)
 						  .trigger("close.selecter", [ data ]);
@@ -636,11 +637,11 @@
 
 	/**
 	 * @method private
-	 * @name _onKeypress
-	 * @description Handles instance keypress, once focused
+	 * @name _onKeydown
+	 * @description Handles instance keydown, once focused
 	 * @param e [object] "Event data"
 	 */
-	function _onKeypress(e) {
+	function _onKeydown(e) {
 		var data = e.data;
 
 		if (e.keyCode === 13) {
@@ -649,7 +650,7 @@
 				_update(data.index, data);
 			}
 			_handleChange(data);
-		} else if (e.keyCode !== 9 && (!e.metaKey && !e.altKey && !e.ctrlKey && !e.shiftKey)) {
+		} else if (e.keyCode !== 9 && (!e.metaKey && !e.altKey && !e.ctrlKey && !e.shiftKey) && $.inArray(e.keyCode, ignoredKeyCode) === -1) {
 			// Ignore modifiers & tabs
 			e.preventDefault();
 			e.stopPropagation();
